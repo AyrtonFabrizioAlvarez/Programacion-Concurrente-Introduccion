@@ -1,0 +1,100 @@
+programa ej4
+procesos
+  proceso recogerFlores
+  comenzar
+    mientras HayFlorEnLaEsquina
+      tomarFlor
+  fin
+  proceso recogerPapeles
+  comenzar
+    mientras HayPapelEnLaBolsa
+      tomarPapel
+  fin
+  proceso vaciarBolsa
+  comenzar
+    si HayPapelEnLaBolsa
+      mientras HayPapelEnLaBolsa
+        depositarPapel
+    si HayFlorEnLaBolsa
+      mientras HayFlorEnLaEsquina
+        depositarFlor
+  fin
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, t1)
+    EnviarMensaje(2, t2)
+  fin
+areas
+  ciudad: AreaPC(2, 2, 100, 100)
+  ciudad1: AreaP(2, 1, 2, 1)
+  ciudad2: AreaP(3, 1, 3, 1)
+  ciudadJefe: AreaP(1, 1, 1, 1)
+robots
+  robot jefe
+  variables
+    id, tarea, trabajador, av, ca:numero
+    ok:boolean
+  comenzar
+    identificarRobots
+    repetir 10
+      Random(trabajador, 1, 2)
+      Random(tarea, 1, 4)
+      Random(av, 2, 10)
+      Random(ca, 2, 10)
+      Informar('trabajador', trabajador)
+      Informar('tarea', tarea)
+      si (trabajador = 1)
+        EnviarMensaje(tarea, t1)
+        si (tarea <> 4)
+          EnviarMensaje(av, t1)
+          EnviarMensaje(ca, t1)
+      sino
+        si (trabajador = 2)
+          EnviarMensaje(tarea, t2)
+          si (tarea <> 4)
+            EnviarMensaje(av, t2)
+            EnviarMensaje(ca, t2)
+      RecibirMensaje(ok, *)
+  fin
+  robot trabajador
+  variables
+    id, tarea, avIn, caIn, av, ca finalizados:numero
+  comenzar
+    avIn:= PosAv
+    caIn:= PosCa
+    RecibirMensaje(id, jefe)
+    RecibirMensaje(tarea, jefe)
+    si (tarea = 4)
+      EnviarMensaje(V, jefe)
+    mientras (tarea <> 4)
+      RecibirMensaje(av, jefe)
+      RecibirMensaje(ca, jefe)
+      BloquearEsquina(av, ca)
+      Pos(av, ca)
+      si (tarea = 1)
+        recogerFlores
+      sino
+        si (tarea = 2)
+          recogerPapeles
+        sino
+          vaciarBolsa
+      Pos(avIn, caIn)
+      LiberarEsquina(av, ca)
+      EnviarMensaje(V, jefe)
+      RecibirMensaje(tarea, jefe)
+      si (tarea = 4)
+        EnviarMensaje(V, jefe)
+  fin
+variables
+  jefe: jefe
+  t1, t2: trabajador
+comenzar
+  AsignarArea(jefe, ciudadJefe)
+  AsignarArea(t1, ciudad)
+  AsignarArea(t1, ciudad1)
+  AsignarArea(t2, ciudad)
+  AsignarArea(t2, ciudad2)
+  Iniciar(jefe, 1, 1)
+  Iniciar(t1, 2, 1)
+  Iniciar(t2, 3, 1)
+fin

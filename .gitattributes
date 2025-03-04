@@ -1,2 +1,99 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+programa ej2
+procesos
+  proceso contarFlores(ES f:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina) & (f < 5)
+      tomarFlor
+      f:= f + 1
+    repetir f
+      depositarFlor
+  fin
+  proceso juntarFlores(ES f:numero)
+  comenzar
+    si HayFlorEnLaEsquina
+      tomatFlor
+      f:= f + 1
+    sino
+      mover
+  fin
+  proceso dejarEnEsquina50(E f:numero ; E av:numero ; E ca:numero)
+  comenzar
+    BloquearEsquina(50, 50)
+    Pos(50, 50)
+    repetir f
+      depositarFlor
+    Pos(av, ca)
+    LiberarEsquina(50, 50)
+  fin
+  proceso buscarEnEsquina50(E f:numero ; ES rep:numero ; E av:numero ; E ca:numero)
+  variables
+    n:numero
+  comenzar
+    n:= 0
+    BloquearEsquina(50, 50)
+    Pos(50, 50)
+    contarFlores(n)
+    si (n = f)
+      repetir f
+        tomarFlor
+      Pos(avIn, caIn)
+      LiberarEsquina(50, 50)
+      rep:= 0
+    sino
+      rep:= rep + 1
+  fin
+areas
+  esquina50: AreaC(50, 50, 50, 50)
+  consumidor1: AreaP(11, 1, 11, 1)
+  consumidor2: AreaP(12, 1, 12, 1)
+  productor1: AreaP(5, 1, 5, 100)
+  productor2: AreaP(10, 1, 10, 100)
+robots
+  robot consumidor
+  variables
+    f, avIn, caIn, repeticiones:numero
+    terminaron:boolean
+  comenzar
+    avIn:= PosAv
+    caIn:= PosCa
+    terminaron:= F
+    mientras (~terminaron)
+      repeticiones:= 0
+      Random(f, 2, 5)
+      mientras (repeticiones > 0)
+        buscarEnEsquina50(f, repeticiones, avIn, caIn)
+        si (repeticiones = 8)
+          terminaron:= V
+  fin
+  robot productor
+  variables
+    f, av, ca:numero
+  comenzar
+    mientras (PosCa <= 100)
+      f:= 0
+      mientras (f < 5)
+        Informar(f)
+        juntarFlores(f)
+      av:= PosAv
+      ca:= PosCa
+      si (f = 5)
+        dejarEnEsquina50(f, av, ca)
+        f:= 0
+  fin
+variables
+  p1, p2: productor
+  c1, c2: consumidor
+comenzar
+  AsignarArea(p1, esquina50)
+  AsignarArea(p1, productor1)
+  AsignarArea(p2, esquina50)
+  AsignarArea(p2, productor2)
+  AsignarArea(c1, esquina50)
+  AsignarArea(c1, consumidor1)
+  AsignarArea(c2, esquina50)
+  AsignarArea(c2, consumidor2)
+  Iniciar(p1, 5, 1)
+  Iniciar(p2, 10, 1)
+  Iniciar(c1, 11, 1)
+  Iniciar(c2, 12, 1)
+fin
